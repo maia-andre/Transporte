@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      Pure-Compose app: this XML theme only styles the Activity window (status bar /
+      background) before Compose draws. The full Material 3 color scheme lives in
+      ui/theme/Theme.kt. Parent is a framework theme so we don't need AppCompat/Material
+      Components on the classpath.
+    -->
+    <style name="Theme.TransporteSJC" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/azul</item>
+        <item name="android:windowBackground">@color/superficie</item>
+        <item name="android:navigationBarColor">@color/branco</item>
+    </style>
+</resources>

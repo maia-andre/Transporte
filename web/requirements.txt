@@ -1,0 +1,6 @@
+streamlit>=1.36
+firebase-admin>=6.5
+pandas>=2.2
+
+# Desenvolvimento / testes
+pytest>=8.0

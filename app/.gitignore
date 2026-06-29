@@ -1,0 +1,36 @@
+# Built application files / build output
+build/
+*.apk
+*.aar
+*.ap_
+*.aab
+*.dex
+*.class
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration (SDK location, etc.) — machine-specific, never commit
+local.properties
+
+# Firebase / signing secrets — NEVER commit
+google-services.json
+*.keystore
+*.jks
+keystore.properties
+
+# OS / editor noise
+.DS_Store
+*.log

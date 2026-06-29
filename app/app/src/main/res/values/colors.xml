@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SJC design tokens (mirror ui/theme/Color.kt). Used by the XML window theme. -->
+    <color name="azul">#0B3C7A</color>
+    <color name="azulClaro">#1565C0</color>
+    <color name="dourado">#C8A24B</color>
+    <color name="verde">#2E7D32</color>
+    <color name="vermelho">#C62828</color>
+    <color name="texto">#1A2733</color>
+    <color name="superficie">#F2F5F9</color>
+    <color name="branco">#FFFFFF</color>
+</resources>

@@ -1,0 +1,32 @@
+# --- Secrets / credenciais (NUNCA commitar) ---
+web/.streamlit/secrets.toml
+**/serviceAccount*.json
+**/google-services.json
+*.keystore
+*.jks
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# --- Android / Gradle ---
+app/build/
+app/**/build/
+.gradle/
+local.properties
+*.iml
+.idea/
+
+# --- Firebase ---
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# --- SO / editores ---
+.DS_Store
+Thumbs.db

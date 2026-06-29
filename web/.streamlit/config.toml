@@ -1,0 +1,10 @@
+# Tema — identidade visual SJC (azul institucional + dourado + verde)
+[theme]
+primaryColor = "#0B3C7A"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F2F5F9"
+textColor = "#1A2733"
+font = "sans serif"
+
+[server]
+headless = true
