@@ -11,6 +11,7 @@ from itertools import groupby
 
 import streamlit as st
 
+from components.auth import exigir_papel
 from components.theme import (
     STATUS_COR,
     fmt_periodo,
@@ -20,13 +21,13 @@ from components.theme import (
     setup_sidebar,
     status_chip,
 )
-from domain import StatusMotorista, StatusVeiculo, StatusViagem, Viagem
+from domain import Role, StatusMotorista, StatusVeiculo, StatusViagem, Viagem
 from domain.rules import ConflitoEscala, checar_conflito, conflitos
 from services import get_repository
 
-st.set_page_config(page_title="Calendário · Transporte SJC", page_icon="📅", layout="wide")
 header("Calendário de Requisições", "Trate as viagens: aceite e escale, ou rejeite com justificativa")
 setup_sidebar()
+exigir_papel(Role.CONTROLADOR)
 
 repo = get_repository()
 

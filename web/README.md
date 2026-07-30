@@ -1,8 +1,28 @@
 # Painel Web — Transporte SJC (Streamlit)
 
-Painel de controle do controlador: cadastros de motoristas/veículos/secretarias,
-gestão de papéis e o **calendário de requisições** (aceitar+escalar / rejeitar).
-Hoje roda com **dados mockados em memória**; a troca para Firebase é um único ponto.
+Painel com **login e dois papéis**: **controlador** (cadastros de
+motoristas/veículos/secretarias, gestão de papéis e o **calendário de requisições** —
+aceitar+escalar / rejeitar) e **solicitante** (criar e acompanhar/cancelar as próprias
+requisições, sem precisar do app). Auto-cadastro é livre e sempre vira solicitante; o
+papel de controlador só é concedido por um controlador já existente (tela Usuários).
+Hoje roda com **dados mockados em memória** e autenticação local (sem Firebase ainda);
+a troca para Firebase é um único ponto — ver `services/get_repository`.
+
+## Login (demonstração)
+
+Sem Firebase, o login usa e-mail/senha guardados no próprio mock store (hash
+PBKDF2-HMAC-SHA256, `domain/auth.py`). Contas semeadas (`services/mock_data.py`), todas
+com a senha `transporte123`:
+
+| E-mail | Papel |
+|---|---|
+| `ana.controle@sjc.sp.gov.br` | Controlador |
+| `carlos.silva@sjc.sp.gov.br` | Solicitante |
+| `beatriz.souza@sjc.sp.gov.br` | Solicitante |
+| `joao.motorista@sjc.sp.gov.br` | Motorista *(sem tela própria no painel ainda — ver CLAUDE.md)* |
+
+Pela aba "Criar conta" também dá pra se auto-cadastrar como solicitante (sem
+restrição de e-mail por enquanto — isso volta quando o Firebase Auth entrar).
 
 ## Como rodar (Linux/Debian — use venv!)
 
@@ -31,17 +51,24 @@ cd web
 - `tests/test_models.py` — mapeamento entidade ⇄ documento (pronto p/ Firestore).
 - `tests/test_rules.py` — conflito de escala e máquina de estados.
 - `tests/test_mock_repository.py` — fluxo do controlador ponta a ponta.
-- `tests/test_app_smoke.py` — roda o app real e cada página headless (`AppTest`).
+- `tests/test_auth.py` — hash de senha e login/cadastro no `MockRepository`.
+- `tests/test_app_smoke.py` — roda o app real headless (`AppTest`): login, cadastro e
+  controle de acesso por papel em cada página.
 
 ## Estrutura
 
 ```
 web/
-├── app.py                  # Dashboard (entry point)
-├── pages/                  # Calendário, Motoristas, Veículos, Secretarias, Usuários
-├── domain/                 # entidades, enums (contrato), regras (conflito + estados)
+├── app.py                  # roteador: login gate + st.navigation por papel
+├── pages/                  # 0 Dashboard, 1 Calendário, 2-5 cadastros (controlador)
+│                           # 6 Nova Requisição, 7 Minhas Requisições (solicitante)
+├── domain/                 # entidades, enums (contrato), regras (conflito + estados),
+│                           # auth.py (hash de senha, independente de backend)
 ├── services/               # Repository (interface) + Mock + Firebase (skeleton) + factory
-├── components/theme.py     # identidade visual SJC + helpers de UI
+├── components/
+│   ├── theme.py            # identidade visual SJC + helpers de UI + sidebar
+│   ├── auth.py              # sessão do usuário logado + exigir_papel (por página)
+│   └── login.py             # tela de login + auto-cadastro
 ├── tests/
 └── .streamlit/
     ├── config.toml         # tema SJC

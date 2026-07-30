@@ -89,13 +89,17 @@ stateDiagram-v2
 
 ## ✨ Funcionalidades
 
-| 🖥️ Painel Web (controlador) | 📱 App (solicitante / motorista / controlador) |
-|---|---|
-| Cadastro de **motoristas** (nome, matrícula, cargo, secretaria, telefone, CNH) | **Solicitante:** criar requisição e acompanhar status |
-| Cadastro de **veículos** (prefixo, placa, **placa patrimonial**, modelo, ano, capacidade, combustível) | **Motorista:** ver escala · iniciar e concluir viagem |
-| Cadastro de **secretarias** e gestão de **papéis** | **Controlador:** visão geral (status do dia) |
-| **Calendário/triagem:** aceitar e escalar · rejeitar e justificar | Login institucional `@sjc.sp.gov.br` |
-| Checagem de **conflito de agenda** | Cores de status consistentes com o painel |
+O **painel web** agora tem **login com dois papéis** — auto-cadastro é livre e sempre
+vira solicitante; controlador só promove quem já tem conta (autenticação local por
+enquanto, sem Firebase — ver [`web/README.md`](./web/README.md)).
+
+| 🖥️ Painel Web — Controlador | 🖥️ Painel Web — Solicitante | 📱 App (solicitante / motorista / controlador) |
+|---|---|---|
+| Cadastro de **motoristas** (nome, matrícula, cargo, secretaria, telefone, CNH) | Criar **nova requisição** de viagem | **Solicitante:** criar requisição e acompanhar status |
+| Cadastro de **veículos** (prefixo, placa, **placa patrimonial**, modelo, ano, capacidade, combustível) | Acompanhar **minhas requisições** e cancelar (antes de em andamento) | **Motorista:** ver escala · iniciar e concluir viagem |
+| Cadastro de **secretarias** e gestão de **papéis** | | **Controlador:** visão geral (status do dia) |
+| **Calendário/triagem:** aceitar e escalar · rejeitar e justificar | | Login institucional `@sjc.sp.gov.br` |
+| Checagem de **conflito de agenda** | | Cores de status consistentes com o painel |
 
 ## 🧱 Stack
 
@@ -142,9 +146,9 @@ cd app
 ## 🗺️ Roadmap
 
 - [~] **Fase 0 — Fundação:** monorepo, contrato de dados e tema SJC ✅; projeto Firebase + regras + emuladores pendentes
-- [x] **Fase 1 — Painel web (MVP):** cadastros e papéis *(mock)*
+- [x] **Fase 1 — Painel web (MVP):** login (dois papéis, auth local) + cadastros e papéis *(mock)*
 - [x] **Fase 2 — Calendário:** triagem com checagem de conflito *(mock, com testes)*
-- [x] **Fase 3 — App (solicitante):** criar requisição e acompanhar *(mock)*
+- [~] **Fase 3 — Solicitante:** criar requisição e acompanhar, hoje **no app e no painel** *(mock)*; auto-cadastro `@sjc.sp.gov.br` + verificação de e-mail pendem do Firebase
 - [x] **Fase 4 — App (motorista/controlador):** escala, avançar status, visão geral *(mock)*
 - [ ] **Fase 5 — Notificações (FCM) + relatórios**
 - [ ] **Fase 6 — Hardening + piloto**

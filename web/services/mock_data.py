@@ -18,7 +18,11 @@ from domain import (
     Usuario,
     Veiculo,
     Viagem,
+    hash_senha,
 )
+
+# Senha de demonstração para todas as contas semeadas (login local, sem Firebase).
+SENHA_DEMO = "transporte123"
 
 Store = dict[str, dict]
 
@@ -117,10 +121,13 @@ def build_seed() -> Store:
         ),
     }
 
+    credenciais = {u.email.lower(): hash_senha(SENHA_DEMO) for u in usuarios.values()}
+
     return {
         "secretarias": secretarias,
         "usuarios": usuarios,
         "motoristas": motoristas,
         "veiculos": veiculos,
         "viagens": viagens,
+        "credenciais": credenciais,
     }

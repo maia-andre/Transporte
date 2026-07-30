@@ -159,21 +159,40 @@ botão **não é** segurança — a regra é.
 
 ## 6. Roadmap em fases
 
-> **Estado atual (2026-06-28)** — entrega "funcional para testes, com dados mockados,
+> **Estado atual (2026-07-29)** — entrega "funcional para testes, com dados mockados,
 > pronto para Firebase":
 > - 🟡 **Fase 0** — estrutura do monorepo, contrato de dados e tema SJC prontos;
 >   projeto Firebase / regras / emuladores ainda pendentes.
-> - ✅ **Fase 1** — painel web: CRUD de motoristas (com CNH), veículos (com placa
->   patrimonial/combustível/capacidade/ano), secretarias e usuários/papéis. Mockado.
+> - ✅ **Fase 1** — painel web: login + auto-cadastro (**dois papéis: CONTROLADOR e
+>   SOLICITANTE**, ver decisão interina abaixo), CRUD de motoristas (com CNH), veículos
+>   (com placa patrimonial/combustível/capacidade/ano), secretarias e usuários/papéis.
+>   Mockado.
 > - ✅ **Fase 2** — painel web: calendário/agenda, aceitar+escalar com checagem de
 >   conflito, rejeitar com justificativa, simular requisição. Mockado e com testes.
-> - ✅ **Fases 3–4** — app Kotlin (solicitante/motorista/controlador) entregue: mockado,
+> - 🟡 **Fase 3 (parcial, agora também no painel web)** — solicitante já cria e
+>   acompanha/cancela as próprias requisições **pelo painel** (`Nova Requisição` /
+>   `Minhas Requisições`), sem precisar do app. Auto-cadastro no app + verificação de
+>   e-mail `@sjc.sp.gov.br` seguem pendentes (dependem do Firebase Auth).
+> - ✅ **Fase 4** — app Kotlin (solicitante/motorista/controlador) entregue: mockado,
 >   pronto para Firebase, com testes JVM (`./gradlew test`). Compilação/execução no Android
 >   Studio ainda a validar (sem SDK Android no ambiente de build).
 > - ⬜ **Fases 5–6** — dependem do Firebase real.
 >
 > Camada de dados abstraída (`Repository`): a troca Mock → Firebase é um único ponto
 > (`web/services/get_repository`). Testes web: `cd web && .venv/bin/python -m pytest`.
+>
+> **Decisão interina (2026-07-29) — auth local no painel, sem Firebase por ora:**
+> login por e-mail/senha (hash PBKDF2-HMAC-SHA256, `domain/auth.py`), credenciais
+> guardadas no próprio mock store (`services/mock_repository.py`). Dois níveis de
+> acesso: **CONTROLADOR** (cadastros + calendário — restrito a "gente do tráfego": só
+> quem já é controlador promove outro usuário, na tela Usuários) e **SOLICITANTE**
+> (auto-cadastro **livre**, sem restrição de domínio ainda — isso volta quando o
+> Firebase Auth + blocking function entrarem). Bootstrap: o seed já semeia um
+> controlador (`ana.controle@sjc.sp.gov.br`); senha de demonstração de todas as contas
+> semeadas é `transporte123` (`services/mock_data.py::SENHA_DEMO`). Isso é uma solução
+> ponte — quando o Firebase entrar (Fase 0/6), a autenticação por senha local é
+> substituída por Firebase Auth (client SDK no app) e o painel volta a usar apenas o
+> Admin SDK; ver os `# TODO` em `services/firebase_repository.py`.
 
 ### Fase 0 — Fundação 🧱
 **Objetivo:** projeto Firebase de pé e contrato de dados materializado.
@@ -253,11 +272,16 @@ endurece. Notificações (5) podem começar em paralelo assim que 2 estabilizar.
 
 ## 9. Próximo passo imediato
 
-Painel web e app (mockados) entregues para teste. Próximos passos, em ordem:
+Painel web e app (mockados) entregues para teste; painel web agora com login e dois
+papéis (controlador/solicitante, auth local — ver decisão interina no §6). Firebase foi
+deliberadamente deixado de lado por enquanto para priorizar o painel. Próximos passos:
 
-1. **Validar o app no Android Studio** (abrir `app/`, sincronizar Gradle, rodar no emulador).
-2. **Fechar a Fase 0 do Firebase**: criar o projeto, `firestore.rules` v1 + índices, seed das
-   secretarias, e subir os emuladores.
-3. **Ligar o backend**: preencher `web/.streamlit/secrets.toml`, `data_source = "firebase"`,
-   revisar os `# TODO` de `firebase_repository.py`; plugar o mesmo no app (switch point documentado).
-4. **Fase 5** — notificações (FCM) e relatórios. **Fase 6** — hardening + piloto.
+1. **Aprimorar o painel Streamlit** (foco atual): reforçar a autenticação local
+   (ex.: exigir senha mais forte, "esqueci minha senha", expiração de sessão), refinar a
+   experiência do solicitante (`Nova Requisição`/`Minhas Requisições`) e revisar a UX de
+   promoção de papéis na tela Usuários.
+2. Quando o foco voltar para o backend: **Validar o app no Android Studio**, fechar a
+   **Fase 0 do Firebase** (projeto, `firestore.rules` v1 + índices, seed, emuladores) e
+   então ligar `data_source = "firebase"` — nesse momento a auth local do painel é
+   substituída por Firebase Auth (ver TODOs em `firebase_repository.py`).
+3. **Fase 5** — notificações (FCM) e relatórios. **Fase 6** — hardening + piloto.

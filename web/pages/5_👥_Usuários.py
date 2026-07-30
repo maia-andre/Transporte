@@ -1,20 +1,21 @@
 """Usuários e papéis.
 
-No Firebase, novos usuários se auto-cadastram pelo app (e-mail @sjc.sp.gov.br) e
-entram como SOLICITANTE; aqui o controlador os promove a MOTORISTA/CONTROLADOR.
-A promoção grava ``usuarios/{uid}.role`` e o custom claim (ver firebase_repository).
+Auto-cadastro é livre pela tela de login e sempre vira SOLICITANTE; aqui o
+controlador promove a MOTORISTA/CONTROLADOR. No Firebase (futuro), a promoção
+também grava o custom claim (ver firebase_repository).
 """
 from __future__ import annotations
 
 import streamlit as st
 
+from components.auth import exigir_papel
 from components.theme import header, secretaria_label, setup_sidebar
 from domain import Role
 from services import get_repository
 
-st.set_page_config(page_title="Usuários · Transporte SJC", page_icon="👥", layout="wide")
-header("Usuários e papéis", "Auto-cadastro restrito a @sjc.sp.gov.br · promoção pelo controlador")
+header("Usuários e papéis", "Auto-cadastro livre (vira requisitante) · promoção pelo controlador")
 setup_sidebar()
+exigir_papel(Role.CONTROLADOR)
 
 repo = get_repository()
 usuarios = repo.list_usuarios()

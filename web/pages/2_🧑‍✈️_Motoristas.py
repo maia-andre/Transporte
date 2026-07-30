@@ -5,13 +5,14 @@ from datetime import date
 
 import streamlit as st
 
+from components.auth import exigir_papel
 from components.theme import header, secretaria_label, setup_sidebar
-from domain import Motorista, StatusMotorista
+from domain import Motorista, Role, StatusMotorista
 from services import get_repository
 
-st.set_page_config(page_title="Motoristas · Transporte SJC", page_icon="🧑‍✈️", layout="wide")
 header("Motoristas", "Cadastro da equipe de condutores")
 setup_sidebar()
+exigir_papel(Role.CONTROLADOR)
 
 repo = get_repository()
 secretarias = repo.list_secretarias()

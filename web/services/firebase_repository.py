@@ -116,6 +116,22 @@ class FirebaseRepository(Repository):
         from firebase_admin import auth
         auth.set_custom_user_claims(uid, {"role": role.value})  # TODO: validar em produção
 
+    # ---- Autenticação ----------------------------------------------------- #
+    def criar_usuario(self, *, nome, email, senha, secretaria_id, role=Role.SOLICITANTE) -> str:
+        # TODO: no Firebase real, o auto-cadastro é feito pelo app via Firebase Auth
+        # (client SDK) + blocking function `beforeUserCreated`. O painel roda como
+        # Admin e não deveria assumir esse fluxo — ver CLAUDE.md § Autenticação.
+        raise NotImplementedError(
+            "Auto-cadastro é responsabilidade do Firebase Auth (client SDK), não do painel."
+        )
+
+    def autenticar(self, email: str, senha: str) -> Usuario | None:
+        # TODO: idem — login por senha é do Firebase Auth (client SDK); o Admin SDK
+        # não verifica senha de usuário diretamente.
+        raise NotImplementedError(
+            "Login por senha é responsabilidade do Firebase Auth (client SDK), não do painel."
+        )
+
     # ---- Viagens -------------------------------------------------------- #
     def list_viagens(self) -> list[Viagem]:
         return [Viagem.from_dict(d.id, d.to_dict())
@@ -158,5 +174,13 @@ class FirebaseRepository(Repository):
             "motivoRejeicao": motivo,
             "decididoPor": decidido_por,
             "decididoEm": quando,
+            "atualizadoEm": quando,
+        })
+
+    def cancelar_viagem(self, viagem_id, *, quando) -> None:
+        v = self.get_viagem(viagem_id)
+        validar_transicao(v.status, StatusViagem.CANCELADA)
+        self.db.collection("viagens").document(viagem_id).update({
+            "status": StatusViagem.CANCELADA.value,
             "atualizadoEm": quando,
         })

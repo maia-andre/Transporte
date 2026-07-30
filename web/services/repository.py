@@ -83,6 +83,25 @@ class Repository(ABC):
         u.role = role
         self.update_usuario(u)
 
+    # ---- Autenticação (local, enquanto não há Firebase Auth) ------------- #
+    @abstractmethod
+    def criar_usuario(
+        self,
+        *,
+        nome: str,
+        email: str,
+        senha: str,
+        secretaria_id: int | None,
+        role: Role = Role.SOLICITANTE,
+    ) -> str:
+        """Auto-cadastro. Levanta ``EmailJaCadastrado`` se o e-mail já existir."""
+        ...
+
+    @abstractmethod
+    def autenticar(self, email: str, senha: str) -> Usuario | None:
+        """Retorna o ``Usuario`` se e-mail/senha conferirem, senão ``None``."""
+        ...
+
     # ---- Viagens -------------------------------------------------------- #
     @abstractmethod
     def list_viagens(self) -> list[Viagem]: ...
@@ -118,3 +137,6 @@ class Repository(ABC):
         decidido_por: str,
         quando: datetime,
     ) -> None: ...
+
+    @abstractmethod
+    def cancelar_viagem(self, viagem_id: str, *, quando: datetime) -> None: ...

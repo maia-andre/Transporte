@@ -23,6 +23,10 @@ class TransicaoInvalida(Exception):
 # Estados que efetivamente ocupam um motorista/veículo na agenda.
 ESTADOS_OCUPANTES = {StatusViagem.ACEITA, StatusViagem.EM_ANDAMENTO}
 
+# Estados a partir dos quais o próprio solicitante pode cancelar (antes da
+# viagem estar em andamento — depois disso é decisão do controlador/motorista).
+CANCELAVEIS_PELO_SOLICITANTE = {StatusViagem.PENDENTE, StatusViagem.ACEITA}
+
 # Máquina de estados: de -> conjunto de destinos válidos.
 _TRANSICOES: dict[StatusViagem, set[StatusViagem]] = {
     StatusViagem.PENDENTE: {

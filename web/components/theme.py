@@ -12,6 +12,8 @@ import streamlit as st
 from domain import Role, StatusViagem
 from services import Repository, get_repository
 
+from .auth import logout, usuario_logado
+
 # --------------------------------------------------------------------------- #
 # Paleta
 # --------------------------------------------------------------------------- #
@@ -103,25 +105,29 @@ def secretaria_label(repo: Repository, codigo: int | None) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# Identidade do operador (mock) — usada como ``decididoPor``
+# Identidade da sessão — usuário logado, usado como ``decididoPor``
 # --------------------------------------------------------------------------- #
-def setup_sidebar() -> None:
-    """Barra lateral comum: identidade do operador e ações de demonstração."""
-    repo = get_repository()
-    controladores = [u for u in repo.list_usuarios() if u.role == Role.CONTROLADOR]
-    with st.sidebar:
-        st.caption("👤 Operador (controlador)")
-        if controladores:
-            nomes = {u.nome: u.uid for u in controladores}
-            escolha = st.selectbox("Sessão", list(nomes.keys()), key="_operador_nome")
-            st.session_state["_operador_uid"] = nomes[escolha]
-        st.divider()
-        st.caption("🧪 Demonstração (dados mockados)")
-        if st.button("Restaurar dados de exemplo", use_container_width=True):
-            from services import reset_mock_store
+_ICONE_ROLE = {Role.CONTROLADOR: "🛡️", Role.SOLICITANTE: "🙋", Role.MOTORISTA: "🧑‍✈️"}
 
-            reset_mock_store()
-            st.rerun()
+
+def setup_sidebar() -> None:
+    """Barra lateral comum: identidade da sessão e ações de demonstração."""
+    usuario = usuario_logado()
+    with st.sidebar:
+        if usuario:
+            st.caption(f"{_ICONE_ROLE.get(usuario.role, '👤')} **{usuario.nome}**")
+            st.caption(usuario.email)
+            if st.button("Sair", use_container_width=True):
+                logout()
+                st.rerun()
+        if usuario and usuario.role == Role.CONTROLADOR:
+            st.divider()
+            st.caption("🧪 Demonstração (dados mockados)")
+            if st.button("Restaurar dados de exemplo", use_container_width=True):
+                from services import reset_mock_store
+
+                reset_mock_store()
+                st.rerun()
         try:
             src = st.secrets.get("data_source", "mock")
         except Exception:
@@ -130,4 +136,5 @@ def setup_sidebar() -> None:
 
 
 def operador_uid() -> str:
-    return st.session_state.get("_operador_uid", "u_ctrl")
+    usuario = usuario_logado()
+    return usuario.uid if usuario else ""

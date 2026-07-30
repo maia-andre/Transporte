@@ -3,13 +3,14 @@ from __future__ import annotations
 
 import streamlit as st
 
+from components.auth import exigir_papel
 from components.theme import header, setup_sidebar
-from domain import Secretaria
+from domain import Role, Secretaria
 from services import get_repository
 
-st.set_page_config(page_title="Secretarias · Transporte SJC", page_icon="🏛️", layout="wide")
 header("Secretarias", "Órgãos atendidos pela frota")
 setup_sidebar()
+exigir_papel(Role.CONTROLADOR)
 
 repo = get_repository()
 

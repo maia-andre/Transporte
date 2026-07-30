@@ -10,12 +10,16 @@ import uuid
 from datetime import datetime
 
 from domain import (
+    EmailJaCadastrado,
     Motorista,
+    Role,
     Secretaria,
     StatusViagem,
     Usuario,
     Veiculo,
     Viagem,
+    hash_senha,
+    verificar_senha,
 )
 from domain.rules import validar_transicao
 
@@ -29,6 +33,7 @@ def _novo_id() -> str:
 class MockRepository(Repository):
     def __init__(self, store: dict[str, dict]):
         self._s = store
+        self._s.setdefault("credenciais", {})  # email (lower) -> hash de senha
 
     # ---- Secretarias ---------------------------------------------------- #
     def list_secretarias(self) -> list[Secretaria]:
@@ -94,6 +99,26 @@ class MockRepository(Repository):
     def update_usuario(self, u: Usuario) -> None:
         self._s["usuarios"][u.uid] = u
 
+    # ---- Autenticação ----------------------------------------------------- #
+    def criar_usuario(self, *, nome, email, senha, secretaria_id, role=Role.SOLICITANTE) -> str:
+        email_norm = email.strip().lower()
+        if any(u.email.lower() == email_norm for u in self._s["usuarios"].values()):
+            raise EmailJaCadastrado(email_norm)
+        uid = _novo_id()
+        usuario = Usuario(uid, nome.strip(), email_norm, role, secretaria_id,
+                          criadoEm=datetime.now())
+        self._s["usuarios"][uid] = usuario
+        self._s["credenciais"][email_norm] = hash_senha(senha)
+        return uid
+
+    def autenticar(self, email: str, senha: str) -> Usuario | None:
+        email_norm = email.strip().lower()
+        h = self._s["credenciais"].get(email_norm)
+        if h is None or not verificar_senha(senha, h):
+            return None
+        return next((u for u in self._s["usuarios"].values()
+                    if u.email.lower() == email_norm), None)
+
     # ---- Viagens -------------------------------------------------------- #
     def list_viagens(self) -> list[Viagem]:
         return sorted(self._s["viagens"].values(), key=lambda x: x.dataHoraSaida)
@@ -131,4 +156,10 @@ class MockRepository(Repository):
         v.motivoRejeicao = motivo
         v.decididoPor = decidido_por
         v.decididoEm = quando
+        v.atualizadoEm = quando
+
+    def cancelar_viagem(self, viagem_id, *, quando) -> None:
+        v = self._s["viagens"][viagem_id]
+        validar_transicao(v.status, StatusViagem.CANCELADA)
+        v.status = StatusViagem.CANCELADA
         v.atualizadoEm = quando
