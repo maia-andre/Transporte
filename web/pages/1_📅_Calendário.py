@@ -13,9 +13,11 @@ import streamlit as st
 
 from components.auth import exigir_papel
 from components.theme import (
+    DATA_FORMATO,
     STATUS_COR,
     fmt_periodo,
     header,
+    nome_dia_semana,
     operador_uid,
     secretaria_label,
     setup_sidebar,
@@ -46,9 +48,9 @@ with st.expander("➕ Nova requisição (simular solicitante)"):
                              format_func=lambda s: f"{s.nome} ({s.codigo})")
         origem = col1.text_input("Origem")
         destino = col2.text_input("Destino")
-        d_saida = col1.date_input("Data da saída", value=date.today())
+        d_saida = col1.date_input("Data da saída", value=date.today(), format=DATA_FORMATO)
         h_saida = col2.time_input("Hora da saída", value=time(8, 0))
-        d_ret = col1.date_input("Data do retorno", value=date.today())
+        d_ret = col1.date_input("Data do retorno", value=date.today(), format=DATA_FORMATO)
         h_ret = col2.time_input("Hora do retorno", value=time(12, 0))
         n_pax = col1.number_input("Nº de passageiros", min_value=1, value=1, step=1)
         finalidade = st.text_area("Finalidade / justificativa")
@@ -80,7 +82,7 @@ todas = repo.list_viagens()
 fc1, fc2, fc3 = st.columns([1.4, 1.4, 1.2])
 ini_padrao = date.today() - timedelta(days=2)
 fim_padrao = date.today() + timedelta(days=7)
-intervalo = fc1.date_input("Período", value=(ini_padrao, fim_padrao))
+intervalo = fc1.date_input("Período", value=(ini_padrao, fim_padrao), format=DATA_FORMATO)
 if isinstance(intervalo, tuple) and len(intervalo) == 2:
     d_ini, d_fim = intervalo
 else:
@@ -193,7 +195,7 @@ mot_nome = {m.id: m.nome for m in repo.list_motoristas()}
 veic_pref = {x.id: x.prefixo for x in repo.list_veiculos()}
 
 for dia, grupo in groupby(agenda, key=lambda v: v.dataHoraSaida.date()):
-    st.markdown(f"#### {dia.strftime('%A, %d/%m/%Y')}")
+    st.markdown(f"#### {nome_dia_semana(dia).capitalize()}, {dia.strftime('%d/%m/%Y')}")
     for v in grupo:
         escala = ""
         if v.motoristaId or v.veiculoId:

@@ -88,7 +88,12 @@ def test_dashboard_mostra_metricas():
     # ``st.page_link`` do Dashboard precisa para resolver a página de destino.
     at = _autenticado("app.py", CONTROLADOR)
     assert not at.exception
-    assert len(at.metric) == 4
+    assert len(at.metric) == 2
+    textos = " ".join(m.value for m in at.markdown)
+    assert "Motoristas" in textos
+    assert "Veículos" in textos
+    subtitulos = " ".join(s.value for s in at.subheader)
+    assert "Semana" in subtitulos
 
 
 def test_login_com_credenciais_corretas_autentica():

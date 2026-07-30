@@ -6,7 +6,7 @@ from datetime import date
 import streamlit as st
 
 from components.auth import exigir_papel
-from components.theme import header, secretaria_label, setup_sidebar
+from components.theme import DATA_FORMATO, header, secretaria_label, setup_sidebar
 from domain import Motorista, Role, StatusMotorista
 from services import get_repository
 
@@ -38,7 +38,7 @@ with st.expander("➕ Novo motorista", expanded=False):
         c4, c5, c6 = st.columns(3)
         cnh_num = c4.text_input("CNH — número")
         cnh_cat = c5.selectbox("CNH — categoria", CATEGORIAS, index=1)
-        cnh_val = c6.date_input("CNH — validade", value=date.today())
+        cnh_val = c6.date_input("CNH — validade", value=date.today(), format=DATA_FORMATO)
         if st.form_submit_button("Cadastrar", type="primary"):
             if not nome or not matricula:
                 st.error("Nome e matrícula são obrigatórios.")
@@ -79,13 +79,14 @@ for m in motoristas:
             cnh_cat = c5.selectbox("CNH — categoria", CATEGORIAS,
                                    index=CATEGORIAS.index(m.cnhCategoria)
                                    if m.cnhCategoria in CATEGORIAS else 1)
-            cnh_val = c6.text_input("CNH — validade (AAAA-MM-DD)", m.cnhValidade)
+            cnh_val_atual = date.fromisoformat(m.cnhValidade) if m.cnhValidade else date.today()
+            cnh_val = c6.date_input("CNH — validade", value=cnh_val_atual, format=DATA_FORMATO)
             b1, b2 = st.columns(2)
             if b1.form_submit_button("Salvar", type="primary"):
                 repo.update_motorista(Motorista(
                     id=m.id, nome=nome, matricula=matricula, cargo=cargo,
                     secretariaId=sec.codigo, telefone=telefone, cnhNumero=cnh_num,
-                    cnhCategoria=cnh_cat, cnhValidade=cnh_val,
+                    cnhCategoria=cnh_cat, cnhValidade=cnh_val.isoformat(),
                     usuarioId=m.usuarioId, status=status,
                 ))
                 st.success("Atualizado.")

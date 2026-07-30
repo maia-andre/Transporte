@@ -5,7 +5,7 @@ Cores de status iguais às do app, para a sensação de produto único.
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 
 import streamlit as st
 
@@ -43,6 +43,20 @@ STATUS_ROTULO: dict[StatusViagem, str] = {
     StatusViagem.CANCELADA: "Cancelada",
 }
 
+# Formato de data usado em todos os ``st.date_input`` do painel (padrão brasileiro,
+# em vez do "YYYY/MM/DD" padrão do Streamlit).
+DATA_FORMATO = "DD/MM/YYYY"
+
+_DIAS_SEMANA = ["segunda-feira", "terça-feira", "quarta-feira", "quinta-feira",
+                "sexta-feira", "sábado", "domingo"]
+_DIAS_SEMANA_ABREV = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+
+
+def nome_dia_semana(d: date, abreviado: bool = False) -> str:
+    """Nome do dia da semana em português (independe do locale do sistema)."""
+    lista = _DIAS_SEMANA_ABREV if abreviado else _DIAS_SEMANA
+    return lista[d.weekday()]
+
 
 def inject_css() -> None:
     st.markdown(
@@ -59,6 +73,7 @@ def inject_css() -> None:
           .chip {{
             display: inline-block; padding: 2px 10px; border-radius: 999px;
             color: #fff; font-size: .78rem; font-weight: 600; white-space: nowrap;
+            min-width: 112px; text-align: center;
           }}
           .card {{
             border: 1px solid #e3e8ef; border-left: 5px solid {AZUL};

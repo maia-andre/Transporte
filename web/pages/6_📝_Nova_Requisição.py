@@ -6,7 +6,7 @@ from datetime import date, datetime, time
 import streamlit as st
 
 from components.auth import exigir_papel
-from components.theme import header, setup_sidebar
+from components.theme import DATA_FORMATO, header, setup_sidebar
 from domain import Role, StatusViagem, Viagem
 from services import get_repository
 
@@ -20,9 +20,9 @@ with st.form("nova_requisicao_solicitante", clear_on_submit=True):
     col1, col2 = st.columns(2)
     origem = col1.text_input("Origem")
     destino = col2.text_input("Destino")
-    d_saida = col1.date_input("Data da saída", value=date.today())
+    d_saida = col1.date_input("Data da saída", value=date.today(), format=DATA_FORMATO)
     h_saida = col2.time_input("Hora da saída", value=time(8, 0))
-    d_ret = col1.date_input("Data do retorno", value=date.today())
+    d_ret = col1.date_input("Data do retorno", value=date.today(), format=DATA_FORMATO)
     h_ret = col2.time_input("Hora do retorno", value=time(12, 0))
     n_pax = col1.number_input("Nº de passageiros", min_value=1, value=1, step=1)
     finalidade = st.text_area("Finalidade / justificativa")
